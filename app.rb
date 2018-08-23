@@ -16,6 +16,7 @@ get "/download" do
   lines = RestClient.get(params[:url]).body.lines
 
   content_type "application/zip"
+  attachment params[:filename] || "download.zip"
 
   ZipTricks::RackBody.new do |zip|
     lines.each do |line|
