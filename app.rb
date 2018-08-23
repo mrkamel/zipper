@@ -7,7 +7,7 @@ require "json"
 require "rest-client"
 require "down"
 
-set :server, :puma
+set :server, :webrick
 set :port, ENV["PORT"] || 8080
 set :bind, ENV["BIND"] || "localhost"
 
