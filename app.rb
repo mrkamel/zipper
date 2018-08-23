@@ -4,7 +4,7 @@ require "bundler/setup"
 require "sinatra"
 require "zip_tricks"
 require "json"
-require "rest-client"
+require "http"
 
 set :server, :puma
 set :port, ENV["PORT"] || 8080
