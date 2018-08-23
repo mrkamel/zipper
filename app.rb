@@ -23,7 +23,9 @@ get "/download" do
       json = JSON.parse(line)
 
       zip.write_stored_file(json["filename"]) do |sink|
-        sink.write RestClient.get(json["url"])
+        HTTP.get(json["url"]).each do |chunk|
+          sink.write chunk
+        end
       end
     end
   end
