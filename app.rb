@@ -13,7 +13,10 @@ set :bind, ENV["BIND"] || "localhost"
 get "/download" do
   halt(403) if params[:token].to_s.empty? || params[:token] != ENV["TOKEN"]
   
-  lines = RestClient.get(params[:url]).body.lines
+  response = HTTP.get(params[:url])
+  halt(422) unless response.status.success?
+
+  lines = response.body.to_s.lines
 
   content_type "application/zip"
   attachment params[:filename] || "download.zip"
