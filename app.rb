@@ -10,10 +10,12 @@ set :server, :puma
 set :port, ENV["PORT"] || 8080
 set :bind, ENV["BIND"] || "localhost"
 
-post "/generate" do
+get "/download" do
   halt(403) if params[:token].to_s.empty? || params[:token] != ENV["TOKEN"]
   
   json_request = JSON.parse(RestClient.get(params[:url]).body)
+
+  content_type "application/zip"
 
   ZipTricks::RackBody.new do |zip|
     json_request["entries"].each do |entry|
