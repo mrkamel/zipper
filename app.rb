@@ -4,7 +4,8 @@ require "bundler/setup"
 require "sinatra"
 require "zip_tricks"
 require "json"
-require "http"
+require "rest-client"
+require "down"
 
 set :server, :puma
 set :port, ENV["PORT"] || 8080
@@ -13,10 +14,7 @@ set :bind, ENV["BIND"] || "localhost"
 get "/download" do
   halt(403) if params[:token].to_s.empty? || params[:token] != ENV["TOKEN"]
   
-  response = HTTP.get(params[:url])
-  halt(422) unless response.status.success?
-
-  lines = response.body.to_s.lines
+  lines = RestClient.get(params[:url]).body.lines
 
   content_type "application/zip"
   attachment params[:filename] || "download.zip"
@@ -26,9 +24,9 @@ get "/download" do
       json = JSON.parse(line)
 
       zip.write_stored_file(json["filename"]) do |sink|
-        HTTP.get(json["url"]).body.each do |chunk|
-          sink.write chunk
-        end
+        down = Down.open(json["url"])
+        down.each_chunk { |chunk| sink.write chunk }
+        down.close
       end
     end
   end
