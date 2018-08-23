@@ -5,6 +5,8 @@ require "zip_tricks"
 require "json"
 require "rest-client"
 
+set :server, :puma
+
 post "/generate" do
   halt(403) if params[:token].to_s.empty? || params[:token] != ENV["TOKEN"]
   
