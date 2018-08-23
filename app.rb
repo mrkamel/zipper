@@ -6,6 +6,7 @@ require "json"
 require "rest-client"
 
 set :server, :puma
+set :port, ENV["PORT"] || 8080
 
 post "/generate" do
   halt(403) if params[:token].to_s.empty? || params[:token] != ENV["TOKEN"]
@@ -19,5 +20,10 @@ post "/generate" do
       end
     end
   end
+end
+
+get "/status" do
+  status 200
+  body ''
 end
 
