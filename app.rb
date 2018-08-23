@@ -13,14 +13,16 @@ set :bind, ENV["BIND"] || "localhost"
 get "/download" do
   halt(403) if params[:token].to_s.empty? || params[:token] != ENV["TOKEN"]
   
-  json_request = JSON.parse(RestClient.get(params[:url]).body)
+  lines = RestClient.get(params[:url]).body.lines
 
   content_type "application/zip"
 
   ZipTricks::RackBody.new do |zip|
-    json_request["entries"].each do |entry|
-      zip.write_stored_file(entry["filename"]) do |sink|
-        sink.write RestClient.get(entry["url"])
+    lines.each do |line|
+      json = JSON.parse(line)
+
+      zip.write_stored_file(json["filename"]) do |sink|
+        sink.write RestClient.get(json["url"])
       end
     end
   end
